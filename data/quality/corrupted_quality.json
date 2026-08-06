@@ -1,0 +1,30 @@
+{
+  "report_name": "corrupted_quality",
+  "total_rows": 21,
+  "stale_rows": 1,
+  "freshness_threshold_days": 180,
+  "is_fresh": false,
+  "passed": false,
+  "checks": {
+    "row_count_positive": {
+      "passed": true,
+      "value": 21
+    },
+    "paper_id_unique": {
+      "passed": false,
+      "value": 20
+    },
+    "title_present": {
+      "passed": true,
+      "value": 21
+    },
+    "summary_present": {
+      "passed": false,
+      "value": 19
+    },
+    "summary_length_reasonable": {
+      "passed": false,
+      "value": 1615.1904761904761
+    }
+  }
+}

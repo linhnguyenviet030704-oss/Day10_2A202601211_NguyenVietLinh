@@ -6,8 +6,10 @@ from langchain.agents import create_agent
 from langchain.tools import tool
 
 from core.config import Settings
+from core.utils import normalize_whitespace
 from retrieval.index import LocalEmbeddingIndex
 from retrieval.llm import build_llm
+from retrieval.qa import answer_question
 
 
 def build_agent(settings: Settings, index: LocalEmbeddingIndex):
@@ -38,7 +40,7 @@ def build_agent(settings: Settings, index: LocalEmbeddingIndex):
         )
 
     llm = build_llm(settings=settings, temperature=0.0)
-    return create_agent(
+    agent = create_agent(
         model=llm,
         tools=[semantic_search_papers, lookup_paper],
         system_prompt=(
@@ -48,12 +50,31 @@ def build_agent(settings: Settings, index: LocalEmbeddingIndex):
         ),
         name="paper_corpus_agent",
     )
+    agent._fallback_settings = settings
+    agent._fallback_index = index
+    return agent
 
 
 def run_agent_question(agent: Any, question: str) -> str:
-    result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+    try:
+        result = agent.invoke({"messages": [{"role": "user", "content": question}]})
+    except Exception:
+        settings = getattr(agent, "_fallback_settings", None)
+        index = getattr(agent, "_fallback_index", None)
+        if settings is None or index is None:
+            raise
+        return answer_question(question, settings=settings, index=index).answer
+
     messages = result.get("messages", [])
     if not messages:
         return ""
     final_message = messages[-1]
-    return getattr(final_message, "content", str(final_message))
+    content = getattr(final_message, "content", str(final_message))
+    if isinstance(content, list):
+        return normalize_whitespace(
+            " ".join(
+                part.get("text", "") if isinstance(part, dict) else str(part)
+                for part in content
+            )
+        )
+    return str(content)
