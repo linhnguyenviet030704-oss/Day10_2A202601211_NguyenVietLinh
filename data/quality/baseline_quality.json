@@ -1,0 +1,47 @@
+{
+  "report_name": "baseline",
+  "total_rows": 22,
+  "checks": [
+    {
+      "name": "row_count_positive",
+      "success": true,
+      "detail": "22 row(s) present.",
+      "total_rows": 22
+    },
+    {
+      "name": "paper_id_not_null",
+      "success": true,
+      "detail": "0 empty paper_id value(s).",
+      "empty": 0
+    },
+    {
+      "name": "paper_id_unique",
+      "success": true,
+      "detail": "0 duplicate paper_id value(s).",
+      "duplicates": 0
+    },
+    {
+      "name": "title_not_null",
+      "success": true,
+      "detail": "0 empty title value(s).",
+      "empty": 0
+    },
+    {
+      "name": "summary_min_length",
+      "success": true,
+      "detail": "0 summary(ies) shorter than 40 chars.",
+      "threshold_chars": 40,
+      "short": 0
+    },
+    {
+      "name": "freshness_has_recent_rows",
+      "success": true,
+      "detail": "22 row(s) within 180 days, 0 stale.",
+      "threshold_days": 180,
+      "fresh_rows": 22,
+      "stale_rows": 0
+    }
+  ],
+  "failed_checks": [],
+  "success": true
+}
