@@ -1,0 +1,31 @@
+{
+  "dropped_latest_count": 2,
+  "dropped_latest_paper_ids": [
+    "10.2118/234689-pa",
+    "10.1007/s10278-026-02086-9"
+  ],
+  "duplicate_rows_added": 1,
+  "final_row_count": 21,
+  "operations": [
+    {
+      "type": "blank_summary",
+      "paper_id": "10.21203/rs.3.rs-10178277/v1"
+    },
+    {
+      "type": "summary_noise",
+      "paper_id": "10.2196/preprints.106157"
+    },
+    {
+      "type": "truncate_title",
+      "paper_id": "10.3390/buildings16132637"
+    },
+    {
+      "type": "stale_publication_date",
+      "paper_id": "10.63646/kpqm1958"
+    },
+    {
+      "type": "duplicate_row",
+      "paper_id": "10.21203/rs.3.rs-10178277/v1"
+    }
+  ]
+}

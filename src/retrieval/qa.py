@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import re
 
 from core.config import Settings
-from core.utils import first_sentence
+from core.utils import first_sentence, normalize_whitespace
 from retrieval.index import LocalEmbeddingIndex, SearchResult
 
 
@@ -17,21 +17,41 @@ class AnswerResult:
     retrieved_titles: list[str]
 
 
+_DOI_PATTERN = re.compile(r"\b10\.\d{4,9}/[-._;()/:A-Za-z0-9]+", re.IGNORECASE)
+
+
+def _value_or_unknown(value: str) -> str:
+    cleaned = normalize_whitespace(value)
+    return cleaned or "I don't know from the indexed corpus."
+
+
+def _extract_exact_match(question: str, index: LocalEmbeddingIndex) -> dict | None:
+    title_match = re.search(r"'([^']+)'", question)
+    if title_match:
+        exact = index.lookup(title_match.group(1))
+        if exact:
+            return exact
+
+    doi_match = _DOI_PATTERN.search(question)
+    if not doi_match:
+        return None
+    return index.lookup(doi_match.group(0).rstrip(".,;:!?"))
+
+
 def _extract_answer(question: str, top_result: SearchResult) -> str:
     lowered = question.lower()
     metadata = top_result.metadata
     if "who authored" in lowered or "list the authors" in lowered:
-        return metadata["authors_joined"]
+        return _value_or_unknown(str(metadata.get("authors_joined", "")))
     if "when was" in lowered or "publication date" in lowered or "published on" in lowered:
-        return metadata["published"]
+        return _value_or_unknown(str(metadata.get("published", "")))
     if "what categories" in lowered:
-        return metadata["categories_joined"]
-    return first_sentence(metadata["summary"])
+        return _value_or_unknown(str(metadata.get("categories_joined", "")))
+    return _value_or_unknown(first_sentence(str(metadata.get("summary", ""))))
 
 
 def answer_question(question: str, settings: Settings, index: LocalEmbeddingIndex, top_k: int | None = None) -> AnswerResult:
-    title_match = re.search(r"'([^']+)'", question)
-    exact = index.lookup(title_match.group(1)) if title_match else None
+    exact = _extract_exact_match(question, index)
     retrieved = index.search(question, top_k=top_k)
     if exact:
         exact_result = SearchResult(
