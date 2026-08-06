@@ -1,0 +1,30 @@
+{
+  "report_name": "repaired_quality",
+  "total_rows": 22,
+  "stale_rows": 0,
+  "freshness_threshold_days": 180,
+  "is_fresh": true,
+  "passed": true,
+  "checks": {
+    "row_count_positive": {
+      "passed": true,
+      "value": 22
+    },
+    "paper_id_unique": {
+      "passed": true,
+      "value": 22
+    },
+    "title_present": {
+      "passed": true,
+      "value": 22
+    },
+    "summary_present": {
+      "passed": true,
+      "value": 22
+    },
+    "summary_length_reasonable": {
+      "passed": true,
+      "value": 1777.5
+    }
+  }
+}
